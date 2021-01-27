@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Hatch1fy/httpserve"
+	"github.com/vroomy/common"
 )
 
 const (
@@ -17,7 +17,7 @@ func Init(env map[string]string) (err error) {
 }
 
 // CORs will enable CORs
-func CORs(args ...string) (h httpserve.Handler, err error) {
+func CORs(args ...string) (h common.Handler, err error) {
 	var (
 		url            string
 		methods        string
@@ -47,9 +47,9 @@ func CORs(args ...string) (h httpserve.Handler, err error) {
 	return
 }
 
-func newHandler(url, methods, allowedHeaders string) httpserve.Handler {
-	return func(ctx *httpserve.Context) (res httpserve.Response) {
-		hdr := ctx.Writer.Header()
+func newHandler(url, methods, allowedHeaders string) common.Handler {
+	return func(ctx common.Context) {
+		hdr := ctx.Writer().Header()
 		hdr.Set("Access-Control-Allow-Origin", url)
 		hdr.Set("Access-Control-Allow-Methods", methods)
 		hdr.Set("Access-Control-Allow-Headers", allowedHeaders)

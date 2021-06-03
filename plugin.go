@@ -1,23 +1,32 @@
-package main
+package plugin
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/vroomy/common"
+	"github.com/vroomy/plugins"
 )
+
+var p Plugin
 
 const (
 	defaultMethods        = "POST, GET, OPTIONS, PUT, DELETE"
 	defaultAllowedHeaders = "Accept, Content-Type, Content-Length, Accept-Encoding, Origin, X-UTC-OFFSET"
 )
 
-// Init is called when Vroomy initializes the plugin
-func Init(env map[string]string) (err error) {
-	return
+func init() {
+	if err := plugins.Register("cors", &p); err != nil {
+		log.Fatal(err)
+	}
+}
+
+type Plugin struct {
+	plugins.BasePlugin
 }
 
 // CORs will enable CORs
-func CORs(args ...string) (h common.Handler, err error) {
+func (p *Plugin) CORs(args ...string) (h common.Handler, err error) {
 	var (
 		url            string
 		methods        string
@@ -45,14 +54,4 @@ func CORs(args ...string) (h common.Handler, err error) {
 
 	h = newHandler(url, methods, allowedHeaders)
 	return
-}
-
-func newHandler(url, methods, allowedHeaders string) common.Handler {
-	return func(ctx common.Context) {
-		hdr := ctx.Writer().Header()
-		hdr.Set("Access-Control-Allow-Origin", url)
-		hdr.Set("Access-Control-Allow-Methods", methods)
-		hdr.Set("Access-Control-Allow-Headers", allowedHeaders)
-		return
-	}
 }
